@@ -27,7 +27,6 @@ $(SO_TARGET): $(TARGET) $(OBJECTS)
 
 build:
 	@mkdir -p build
-	@mkdir -p bin
 
 # The Unit Tests
 .PHONY: tests
