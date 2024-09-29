@@ -19,6 +19,7 @@ char *test_destroy() {
 char *test_empty() {
   rb = RingBuffer_create(1024);
   mu_assert(1 == RingBuffer_empty(rb), "RingBuffer should be empty");
+  mu_assert(1024 == RingBuffer_available_space(rb), "Wrong available #space");
   RingBuffer_destroy(rb);
   return NULL;
 }
@@ -42,9 +43,10 @@ char *test_write_then_read() {
   rb = RingBuffer_create(1024);
   int amount;
   amount = RingBuffer_write(rb, data, strlen(data));
-  debug("Available #data is %d", RingBuffer_available_data(rb));
-  debug("Available #space is %d", RingBuffer_available_space(rb));
   mu_assert(amount == (int)strlen(data), "Wrong amount to write");
+  mu_assert(amount == RingBuffer_available_data(rb), "Wrong available #data");
+  mu_assert(1024 - amount == RingBuffer_available_space(rb),
+            "Wrong available #space");
   amount = RingBuffer_read(rb, recv, 7);
   mu_assert(amount == 7, "Wrong amount to read");
   RingBuffer_destroy(rb);
