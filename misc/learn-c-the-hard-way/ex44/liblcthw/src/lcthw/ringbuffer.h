@@ -46,18 +46,4 @@ bstring RingBuffer_gets(RingBuffer *buffer, int amount);
 #define RingBuffer_get_all(B)                                                  \
   RingBuffer_gets((B), RingBuffer_available_data((B)))
 
-/** Get the char* pointer to the buffer start address. */
-#define RingBuffer_starts_at(B) ((B)->buffer + (B)->start)
-
-/** Get the char* pointer to the buffer end address. */
-#define RingBuffer_ends_at(B) ((B)->buffer + (B)->end)
-
-/** Commit buffer B with a read action of amount A without any bound check. */
-#define RingBuffer_commit_read(B, A)                                           \
-  ((B)->start = ((B)->start + (A)) % (B)->length)
-
-/** Commit buffer B with a write action of amount A without any bound check. */
-#define RingBuffer_commit_write(B, A)                                          \
-  ((B)->end = ((B)->end + (A)) % (B)->length)
-
 #endif
