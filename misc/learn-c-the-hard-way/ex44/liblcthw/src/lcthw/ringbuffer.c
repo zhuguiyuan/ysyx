@@ -73,6 +73,10 @@ bstring RingBuffer_gets(RingBuffer *buffer, int amount) {
   RingBuffer_commit_read(buffer, amount);
   assert(RingBuffer_available_data(buffer) >= 0 && "Error in read commit.");
 
+  if (buffer->end == buffer->start) {
+    buffer->start = buffer->end = 0;
+  }
+
   return result;
 error:
   return NULL;
