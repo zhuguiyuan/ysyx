@@ -53,6 +53,18 @@ char *test_write_then_read() {
   return NULL;
 }
 
+char *test_write_to_full() {
+  rb = RingBuffer_create(1024);
+  char *data = calloc(1024, 1);
+  RingBuffer_write(rb, data, 1024);
+  debug("FUCK YOU %d", RingBuffer_available_data(rb));
+  mu_assert(1024 == RingBuffer_available_data(rb), "Wrong available #data");
+  mu_assert(0 == RingBuffer_available_space(rb), "Wrong available #space");
+  mu_assert(0 == RingBuffer_empty(rb), "RingBuffer should not be empty");
+  mu_assert(1 == RingBuffer_full(rb), "RingBuffer should be full");
+  return NULL;
+}
+
 char *all_tests() {
   mu_suite_start();
 
@@ -61,6 +73,7 @@ char *all_tests() {
   mu_run_test(test_empty);
   mu_run_test(test_write_then_read);
   mu_run_test(test_gets_all);
+  mu_run_test(test_write_to_full);
 
   return NULL;
 }

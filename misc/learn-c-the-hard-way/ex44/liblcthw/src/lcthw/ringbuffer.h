@@ -28,14 +28,13 @@ int RingBuffer_write(RingBuffer *buffer, char *data, int length);
 bstring RingBuffer_gets(RingBuffer *buffer, int amount);
 
 /** Check how many space we could read from the ringbuffer. */
-#define RingBuffer_available_data(B)                                           \
-  (((B)->end + 1) % (B)->length - (B)->start - 1)
+#define RingBuffer_available_data(B) ((B)->end - (B)->start)
 
 /** Check how many space we could write before we clean the ringbuffer. */
 #define RingBuffer_available_space(B) ((B)->length - (B)->end - 1)
 
 /** Check whether buffer is full */
-#define RingBuffer_full(B) (RingBuffer_available_data((B)) - (B)->length == 0)
+#define RingBuffer_full(B) (RingBuffer_available_space(B) == 0)
 
 /** Check whether buffer is empty */
 #define RingBuffer_empty(B) (RingBuffer_available_data((B)) == 0)
