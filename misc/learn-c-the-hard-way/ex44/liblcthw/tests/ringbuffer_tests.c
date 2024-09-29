@@ -49,6 +49,10 @@ char *test_write_then_read() {
             "Wrong available #space");
   amount = RingBuffer_read(rb, recv, 7);
   mu_assert(amount == 7, "Wrong amount to read");
+  for (int i = 0; i < amount; ++i) {
+    mu_assert(recv[i] == data[i], "Wrong read data");
+  }
+  mu_assert(0 == recv[amount], "Wrong data boundary");
   RingBuffer_destroy(rb);
   return NULL;
 }
