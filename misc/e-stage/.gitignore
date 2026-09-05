@@ -5,4 +5,6 @@
 !*.ll
 !*.s
 !*.diff
+!*.sh
+!*.py
 !Makefile
