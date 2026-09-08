@@ -7,7 +7,7 @@
 
 void print_state(state_t *s) {
   uint32_t binary = s->mem[s->pc >> 2];
-  inst_t inst = decode_from_binary(binary);
+  inst_t inst = inst_decode_from_binary(binary);
   g_autofree char *str = inst_asprint(&inst);
 
   printf("> PC = 0x%08x, INST = 0x%08x, STR = %s\n", s->pc, binary, str);
@@ -23,50 +23,50 @@ bool inst_cycle(state_t *s) {
   check(s->pc + 4 <= s->mem_size, "pc 0x%08x out of memory", s->pc);
 
   uint32_t binary = s->mem[s->pc >> 2];
-  inst_t inst = decode_from_binary(binary);
+  inst_t inst = inst_decode_from_binary(binary);
 
   uint32_t *regs = s->registers;
   uint32_t pc_next = s->pc + 4;
   switch (inst.kind) {
   case INST_ADD:
-    regs[inst.r.rd] = regs[inst.r.rs1] + regs[inst.r.rs2];
+    regs[inst.rd] = regs[inst.rs1] + regs[inst.rs2];
     break;
   case INST_ADDI:
-    regs[inst.i.rd] = regs[inst.i.rs1] + inst.i.imm;
+    regs[inst.rd] = regs[inst.rs1] + inst.imm;
     break;
   case INST_LUI:
-    regs[inst.u.rd] = inst.u.imm;
+    regs[inst.rd] = inst.imm;
     break;
   case INST_LW: {
-    uint32_t addr = regs[inst.i.rs1] + inst.i.imm;
+    uint32_t addr = regs[inst.rs1] + inst.imm;
     check((addr & 0b11) == 0, "misaligned lw address: 0x%08x", addr);
     check(addr + 4 <= s->mem_size, "lw address out of memory: 0x%08x", addr);
-    regs[inst.i.rd] = s->mem[addr >> 2];
+    regs[inst.rd] = s->mem[addr >> 2];
     break;
   }
   case INST_LBU: {
-    uint32_t addr = regs[inst.i.rs1] + inst.i.imm;
+    uint32_t addr = regs[inst.rs1] + inst.imm;
     check(addr < s->mem_size, "lbu address out of memory: 0x%08x", addr);
-    regs[inst.i.rd] = ((uint8_t *)s->mem)[addr];
+    regs[inst.rd] = ((uint8_t *)s->mem)[addr];
     break;
   }
   case INST_SW: {
-    uint32_t addr = regs[inst.s.rs1] + inst.s.imm;
+    uint32_t addr = regs[inst.rs1] + inst.imm;
     check((addr & 0b11) == 0, "misaligned sw address: 0x%08x", addr);
     check(addr + 4 <= s->mem_size, "sw address out of memory: 0x%08x", addr);
-    s->mem[addr >> 2] = regs[inst.s.rs2];
+    s->mem[addr >> 2] = regs[inst.rs2];
     break;
   }
   case INST_SB: {
-    uint32_t addr = regs[inst.s.rs1] + inst.s.imm;
+    uint32_t addr = regs[inst.rs1] + inst.imm;
     check(addr < s->mem_size, "sb address out of memory: 0x%08x", addr);
-    ((uint8_t *)s->mem)[addr] = regs[inst.s.rs2];
+    ((uint8_t *)s->mem)[addr] = regs[inst.rs2];
     break;
   }
   case INST_JALR: {
-    uint32_t target = (regs[inst.i.rs1] + (uint32_t)inst.i.imm) & ~1u;
+    uint32_t target = (regs[inst.rs1] + inst.imm) & ~1u;
     check((target & 0b11) == 0, "misaligned jalr target: 0x%08x", target);
-    regs[inst.i.rd] = s->pc + 4;
+    regs[inst.rd] = s->pc + 4;
     pc_next = target;
     break;
   }
@@ -77,7 +77,7 @@ bool inst_cycle(state_t *s) {
   s->pc = pc_next;
   return true;
 error:
-  abort();
+  exit(EXIT_FAILURE);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(FILE, fclose)

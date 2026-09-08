@@ -31,7 +31,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(state_t, state_cleanup)
 void print_state(state_t *s);
 
 /** @return (bool) program continue?
-  When any error occurs (like access invalid address), abort. */
+  When any error occurs (like access invalid address), exit with error. */
 bool inst_cycle(state_t *s);
 
 /** @return (bool) load program success?

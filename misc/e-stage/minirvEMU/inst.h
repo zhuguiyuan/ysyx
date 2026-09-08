@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-typedef enum { INST_FMT_R, INST_FMT_I, INST_FMT_S, INST_FMT_U } inst_fmt_t;
+const char *reg_name(uint32_t reg_idx);
 
 typedef enum {
   INST_ADD,
@@ -19,32 +19,13 @@ typedef enum {
 
 typedef struct {
   inst_kind_t kind;
-  union {
-    struct {
-      uint8_t rd;
-      uint8_t rs1;
-      uint8_t rs2;
-    } r;
-    struct {
-      uint8_t rd;
-      uint8_t rs1;
-      int32_t imm;
-    } i;
-    struct {
-      uint8_t rs1;
-      uint8_t rs2;
-      int32_t imm;
-    } s;
-    struct {
-      uint8_t rd;
-      int32_t imm;
-    } u;
-  };
+  uint8_t rd;
+  uint8_t rs1;
+  uint8_t rs2;
+  int32_t imm;
 } inst_t;
 
-const char *reg_name(uint32_t reg_id);
-inst_fmt_t inst_fmt_of(inst_kind_t k);
 char *inst_asprint(const inst_t *inst);
-inst_t decode_from_binary(uint32_t binary);
+inst_t inst_decode_from_binary(uint32_t binary);
 
 #endif
